@@ -7,3 +7,6 @@ Foco em agilidade para o pequeno empreendedor.
 📞 Contato e Suporte
 Se você tem um pequeno negócio e deseja facilitar a gestão dos seus produtos, entre em contato para saber mais ou tirar dúvidas:
 👉 Fale comigo pelo WhatsApp https://wa.me/5565992242567
+
+👉 https://gestor.lojadobrasil.com.br/login
+
