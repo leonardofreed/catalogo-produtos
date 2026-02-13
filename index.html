@@ -3,88 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Digital</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com">
-</head>
-<body class="bg-gray-100 font-sans">
-
-    <!-- Header -->
-    <header class="bg-green-600 text-white p-6 shadow-lg text-center">
-        <h1 class="text-2xl font-bold">Nosso Catálogo</h1>
-        <p class="text-sm opacity-90">Peça agora pelo WhatsApp</p>
-    </header>
-
-    <main class="max-w-4xl mx-auto p-4 space-y-8">
+    <title>Cardápio Direto</title>
+    <style>
+        body { font-family: sans-serif; background: #eee; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .produto { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-add { background: #e67e22; color: #fff; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
         
-        <!-- Horários -->
-        <section class="bg-white rounded-lg shadow p-4">
-            <h2 class="font-bold text-gray-700 border-b pb-2 mb-3"><i class="far fa-clock mr-2"></i>Horários de Funcionamento</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                <p><strong>Seg:</strong> 08:00 - 12:00 | 13:22 - 18:22</p>
-                <p><strong>Ter a Qua:</strong> 08:00 - 18:00</p>
-                <p><strong>Qui a Dom:</strong> 08:00 - 18:00</p>
-            </div>
-        </section>
+        /* Carrinho */
+        #carrinho { background: #fff; padding: 20px; border-radius: 8px; margin-top: 30px; border: 2px solid #333; }
+        .item-carrinho { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        
+        /* BOTÃO WHATSAPP */
+        .btn-wpp { display: block; background: #25d366; color: #fff; text-align: center; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1.2em; margin-top: 15px; }
+    </style>
+</head>
+<body>
 
-        <!-- Lista de Produtos -->
-        <section>
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Cardápio / Produtos</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                <!-- Produto 1 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden flex border border-gray-200">
-                    <img src="http://gestor.lojadobrasil.com.br//static/uploads/bf72068e74484864add1436e068d9aea_1770906802.jpg" alt="teste" class="w-32 h-32 object-cover">
-                    <div class="p-4 flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-semibold text-green-600 uppercase">Bebidas</span>
-                            <h3 class="font-bold text-lg leading-tight">teste</h3>
-                            <p class="text-gray-500 text-sm">fdfvadf</p>
-                        </div>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="text-green-700 font-bold text-lg">R$ 10,54</span>
-                            <a href="https://wa.me, quero pedir: teste" class="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
-                    </div>
+<div class="container">
+    <h1 id="nome-loja">Carregando...</h1>
+    
+    <div id="lista-produtos"></div>
+
+    <div id="carrinho">
+        <h2>Seu Carrinho</h2>
+        <div id="itens-carrinho">
+            <p>Carrinho vazio...</p>
+        </div>
+        <h3 id="total-carrinho">Total: R$ 0,00</h3>
+        <a href="#" id="link-wpp" class="btn-wpp" style="display: none;">FINALIZAR NO WHATSAPP</a>
+    </div>
+</div>
+
+<script>
+    const API = "http://gestor.lojadobrasil.com.br/api/loja/1/json?token=4615c2825c86489297c206bf5697d0ea";
+    let produtos = [];
+    let carrinho = [];
+    let whatsappLoja = "";
+
+    // Puxa os dados da API
+    fetch(API)
+        .then(r => r.json())
+        .then(dados => {
+            document.getElementById('nome-loja').innerText = dados.loja;
+            produtos = dados.produtos;
+            whatsappLoja = dados.whatsapp; // Pega o número da API
+            renderizarProdutos();
+        });
+
+    function renderizarProdutos() {
+        const div = document.getElementById('lista-produtos');
+        div.innerHTML = produtos.map(p => `
+            <div class="produto">
+                <div>
+                    <strong>${p.titulo}</strong><br>
+                    R$ ${p.preco.toFixed(2)}
                 </div>
-
-                <!-- Produto 2 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden flex border border-gray-200">
-                    <img src="http://gestor.lojadobrasil.com.br//static/uploads/bf72068e74484864add1436e068d9aea_1770906802.jpg" alt="bljhuhgggk" class="w-32 h-32 object-cover">
-                    <div class="p-4 flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-semibold text-gray-400 uppercase">Todos</span>
-                            <h3 class="font-bold text-lg leading-tight">bljhuhgggk</h3>
-                            <p class="text-gray-500 text-sm">nbjhjh</p>
-                        </div>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="text-green-700 font-bold text-lg">R$ 8,00</span>
-                            <a href="https://wa.me, quero pedir: bljhuhgggk" class="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
+                <button class="btn-add" onclick="add(${p.id})">Adicionar</button>
             </div>
-        </section>
+        `).join('');
+    }
 
-        <!-- Entrega -->
-        <section class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded shadow-sm">
-            <h2 class="font-bold text-blue-800 mb-1"><i class="fas fa-motorcycle mr-2"></i>Taxa de Entrega</h2>
-            <p class="text-blue-700 text-sm">
-                <strong>Residencial Claúdio Marchetti:</strong> R$ 0,68 
-                <span class="block text-xs opacity-75">(CEP: 78076-301 a 78076-320)</span>
-            </p>
-        </section>
+    function add(id) {
+        const p = produtos.find(item => item.id === id);
+        carrinho.push(p);
+        atualizarCarrinho();
+    }
 
-    </main>
+    function atualizarCarrinho() {
+        const lista = document.getElementById('itens-carrinho');
+        const totalTxt = document.getElementById('total-carrinho');
+        const botao = document.getElementById('link-wpp');
 
-    <footer class="text-center p-8 text-gray-400 text-xs">
-        &copy; 2024 - Todos os direitos reservados
-    </footer>
+        if (carrinho.length === 0) {
+            lista.innerHTML = "<p>Carrinho vazio...</p>";
+            botao.style.display = "none";
+            return;
+        }
+
+        let total = 0;
+        let textoWpp = `*NOVO PEDIDO*\n--------------------\n`;
+
+        lista.innerHTML = carrinho.map(item => {
+            total += item.preco;
+            textoWpp += `• ${item.titulo} - R$ ${item.preco.toFixed(2)}\n`;
+            return `<div class="item-carrinho"><span>${item.titulo}</span><span>R$ ${item.preco.toFixed(2)}</span></div>`;
+        }).join('');
+
+        totalTxt.innerText = `Total: R$ ${total.toFixed(2)}`;
+        textoWpp += `--------------------\n*TOTAL: R$ ${total.toFixed(2)}*`;
+
+        // Monta o link direto no botão
+        botao.href = `https://api.whatsapp.com{whatsappLoja}&text=${encodeURIComponent(textoWpp)}`;
+        botao.style.display = "block";
+    }
+</script>
 
 </body>
 </html>
