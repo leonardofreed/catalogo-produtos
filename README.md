@@ -7,13 +7,13 @@ Este projeto foi desenvolvido com o objetivo de apoiar pequenas empresas e negó
 ## 📱 Interface
 
 ### Menu principal
-![Menu principal](imagens/menu.png)
+![Menu principal](https://github.com/leonardofreed/catalogo-produtos/raw/main/imagens/menu.png)
 
 ### Cadastro de produtos
-![Tela de cadastro de produtos](imagens/cadastro.png)
+![Tela de cadastro de produtos](https://github.com/leonardofreed/catalogo-produtos/raw/main/imagens/cadastro.png)
 
 ### Gerenciar produtos
-![Tela de gerenciamento de produtos](imagens/gerenciar.png)
+![Tela de gerenciamento de produtos](https://github.com/leonardofreed/catalogo-produtos/raw/main/imagens/gerenciar.png)
 
 ---
 
