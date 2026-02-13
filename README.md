@@ -25,6 +25,15 @@ Este projeto foi desenvolvido com o objetivo de apoiar pequenas empresas e negó
 
 ---
 
+## 📋 Como gerenciar os produtos
+
+Você pode atualizar o catálogo de duas formas:
+
+- **Edição manual** — Edite o arquivo `data.json` diretamente para incluir, alterar ou remover produtos.
+- **JSON pronto** — Use a tela de gerenciamento para colar um JSON já organizado e importar vários produtos de uma vez (gestão semi-automática).
+
+---
+
 ## 📞 Contato e Suporte
 
 Se você tem um pequeno negócio e deseja facilitar a gestão dos seus produtos, entre em contato para saber mais ou tirar dúvidas:
