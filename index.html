@@ -1,73 +1,90 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - Loja do Brasil</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Catálogo Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
-    <!-- Cabeçalho -->
-    <header class="bg-green-600 text-white p-6 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Catálogo Digital</h1>
-            <div id="loja-status" class="px-3 py-1 rounded-full text-xs font-semibold uppercase">Carregando...</div>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 id="storeName"><i class="fas fa-utensils"></i> Carregando...</h1>
+            <p id="storeDesc"></p>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar produtos...">
+                <i class="fas fa-search"></i>
+            </div>
         </div>
     </header>
 
-    <main class="container mx-auto py-8 px-4">
-        <!-- Grid de Produtos -->
-        <div id="lista-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Os produtos da API aparecerão aqui -->
+    <nav class="categories-nav">
+        <div class="container scroll-x" id="categoryFilter">
+            <button class="cat-btn active" data-id="all">Todos</button>
+            <!-- Categories injected here -->
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="product-grid" id="productGrid">
+            <!-- Products injected here -->
         </div>
     </main>
 
-    <script>
-        const API_URL = 'http://gestor.lojadobrasil.com.br/api/loja/1/json?token=4615c2825c86489297c206bf5697d0ea';
+    <div class="cart-fab" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </div>
 
-        async function carregarCatalogo() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                const container = document.getElementById('lista-produtos');
-                container.innerHTML = ''; // Limpa o loader
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2><i class="fas fa-shopping-cart"></i> Seu Carrinho</h2>
+            <button class="close-btn" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items injected here -->
+        </div>
+        <div class="cart-footer">
+            <div class="checkout-form">
+                <input type="text" id="custName" placeholder="Seu Nome" required>
+                <input type="text" id="custAddress" placeholder="Endereço (Rua, Número, Apto)" required>
+                <div style="position: relative; margin-bottom: 0.6rem;">
+                    <input type="text" id="cepInput" placeholder="Seu CEP (Ex: 00000-000)" maxlength="9"
+                        oninput="verifyCEP()">
+                    <span id="cepStatus"
+                        style="font-size: 0.75rem; display: block; margin-top: -0.4rem; padding-left: 0.2rem;"></span>
+                </div>
+                <select id="paymentMethod">
+                    <option value="Cartão">Cartão</option>
+                    <option value="Pix">Pix</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                </select>
+            </div>
+            <div class="total-row" style="font-size: 1rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                <span>Subtotal:</span>
+                <span id="cartSubtotal">R$ 0,00</span>
+            </div>
+            <div class="total-row" style="font-size: 1rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                <span>Frete:</span>
+                <span id="deliveryFee">R$ 0,00</span>
+            </div>
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="cartTotal">R$ 0,00</span>
+            </div>
+            <button class="checkout-btn" onclick="sendOrder()">
+                <i class="fab fa-whatsapp"></i> Finalizar Pedido
+            </button>
+        </div>
+    </div>
 
-                // Renderiza cada produto
-                data.produtos.forEach(produto => {
-                    const card = `
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-                            <img src="${produto.imagem}" alt="${produto.titulo}" class="w-full h-48 object-cover">
-                            <div class="p-4">
-                                <span class="text-xs text-blue-500 font-bold uppercase">${produto.categoria}</span>
-                                <h2 class="text-lg font-bold text-gray-800 mt-1">${produto.titulo}</h2>
-                                <p class="text-gray-600 text-sm h-12 overflow-hidden">${produto.descricao}</p>
-                                <div class="mt-4 flex items-center justify-between">
-                                    <span class="text-green-600 font-bold text-xl">R$ ${produto.preco.toFixed(2)}</span>
-                                    <a href="https://wa.me{data.whatsapp}?text=Olá! Quero pedir: ${produto.titulo}" 
-                                       target="_blank"
-                                       class="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full shadow-md">
-                                        🛒 Pedir
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += card;
-                });
-
-                // Atualiza status da loja (exemplo simplificado)
-                document.getElementById('loja-status').innerText = "Loja Online";
-                document.getElementById('loja-status').classList.add('bg-green-200', 'text-green-800');
-
-            } catch (error) {
-                console.error("Erro ao carregar API:", error);
-                document.getElementById('lista-produtos').innerHTML = '<p class="text-red-500">Erro ao carregar produtos. Verifique sua conexão.</p>';
-            }
-        }
-
-        carregarCatalogo();
-    </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
