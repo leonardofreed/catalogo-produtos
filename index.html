@@ -3,101 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardápio Direto</title>
-    <style>
-        body { font-family: sans-serif; background: #eee; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .produto { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn-add { background: #e67e22; color: #fff; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
-        
-        /* Carrinho */
-        #carrinho { background: #fff; padding: 20px; border-radius: 8px; margin-top: 30px; border: 2px solid #333; }
-        .item-carrinho { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        
-        /* BOTÃO WHATSAPP */
-        .btn-wpp { display: block; background: #25d366; color: #fff; text-align: center; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1.2em; margin-top: 15px; }
-    </style>
+    <title>Catálogo - Loja do Brasil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
-<div class="container">
-    <h1 id="nome-loja">Carregando...</h1>
-    
-    <div id="lista-produtos"></div>
-
-    <div id="carrinho">
-        <h2>Seu Carrinho</h2>
-        <div id="itens-carrinho">
-            <p>Carrinho vazio...</p>
+    <!-- Cabeçalho -->
+    <header class="bg-green-600 text-white p-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Catálogo Digital</h1>
+            <div id="loja-status" class="px-3 py-1 rounded-full text-xs font-semibold uppercase">Carregando...</div>
         </div>
-        <h3 id="total-carrinho">Total: R$ 0,00</h3>
-        <a href="#" id="link-wpp" class="btn-wpp" style="display: none;">FINALIZAR NO WHATSAPP</a>
-    </div>
-</div>
+    </header>
 
-<script>
-    const API = "http://gestor.lojadobrasil.com.br/api/loja/1/json?token=4615c2825c86489297c206bf5697d0ea";
-    let produtos = [];
-    let carrinho = [];
-    let whatsappLoja = "";
+    <main class="container mx-auto py-8 px-4">
+        <!-- Grid de Produtos -->
+        <div id="lista-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Os produtos da API aparecerão aqui -->
+        </div>
+    </main>
 
-    // Puxa os dados da API
-    fetch(API)
-        .then(r => r.json())
-        .then(dados => {
-            document.getElementById('nome-loja').innerText = dados.loja;
-            produtos = dados.produtos;
-            whatsappLoja = dados.whatsapp; // Pega o número da API
-            renderizarProdutos();
-        });
+    <script>
+        const API_URL = 'http://gestor.lojadobrasil.com.br/api/loja/1/json?token=4615c2825c86489297c206bf5697d0ea';
 
-    function renderizarProdutos() {
-        const div = document.getElementById('lista-produtos');
-        div.innerHTML = produtos.map(p => `
-            <div class="produto">
-                <div>
-                    <strong>${p.titulo}</strong><br>
-                    R$ ${p.preco.toFixed(2)}
-                </div>
-                <button class="btn-add" onclick="add(${p.id})">Adicionar</button>
-            </div>
-        `).join('');
-    }
+        async function carregarCatalogo() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                const container = document.getElementById('lista-produtos');
+                container.innerHTML = ''; // Limpa o loader
 
-    function add(id) {
-        const p = produtos.find(item => item.id === id);
-        carrinho.push(p);
-        atualizarCarrinho();
-    }
+                // Renderiza cada produto
+                data.produtos.forEach(produto => {
+                    const card = `
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
+                            <img src="${produto.imagem}" alt="${produto.titulo}" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <span class="text-xs text-blue-500 font-bold uppercase">${produto.categoria}</span>
+                                <h2 class="text-lg font-bold text-gray-800 mt-1">${produto.titulo}</h2>
+                                <p class="text-gray-600 text-sm h-12 overflow-hidden">${produto.descricao}</p>
+                                <div class="mt-4 flex items-center justify-between">
+                                    <span class="text-green-600 font-bold text-xl">R$ ${produto.preco.toFixed(2)}</span>
+                                    <a href="https://wa.me{data.whatsapp}?text=Olá! Quero pedir: ${produto.titulo}" 
+                                       target="_blank"
+                                       class="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full shadow-md">
+                                        🛒 Pedir
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
 
-    function atualizarCarrinho() {
-        const lista = document.getElementById('itens-carrinho');
-        const totalTxt = document.getElementById('total-carrinho');
-        const botao = document.getElementById('link-wpp');
+                // Atualiza status da loja (exemplo simplificado)
+                document.getElementById('loja-status').innerText = "Loja Online";
+                document.getElementById('loja-status').classList.add('bg-green-200', 'text-green-800');
 
-        if (carrinho.length === 0) {
-            lista.innerHTML = "<p>Carrinho vazio...</p>";
-            botao.style.display = "none";
-            return;
+            } catch (error) {
+                console.error("Erro ao carregar API:", error);
+                document.getElementById('lista-produtos').innerHTML = '<p class="text-red-500">Erro ao carregar produtos. Verifique sua conexão.</p>';
+            }
         }
 
-        let total = 0;
-        let textoWpp = `*NOVO PEDIDO*\n--------------------\n`;
-
-        lista.innerHTML = carrinho.map(item => {
-            total += item.preco;
-            textoWpp += `• ${item.titulo} - R$ ${item.preco.toFixed(2)}\n`;
-            return `<div class="item-carrinho"><span>${item.titulo}</span><span>R$ ${item.preco.toFixed(2)}</span></div>`;
-        }).join('');
-
-        totalTxt.innerText = `Total: R$ ${total.toFixed(2)}`;
-        textoWpp += `--------------------\n*TOTAL: R$ ${total.toFixed(2)}*`;
-
-        // Monta o link direto no botão
-        botao.href = `https://api.whatsapp.com{whatsappLoja}&text=${encodeURIComponent(textoWpp)}`;
-        botao.style.display = "block";
-    }
-</script>
-
+        carregarCatalogo();
+    </script>
 </body>
 </html>
